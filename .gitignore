@@ -1,0 +1,9 @@
+.env
+.DS_Store
+*.key
+*.pem
+*.json
+*.ipynb
+
+__pycache__/
+
