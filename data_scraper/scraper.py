@@ -19,6 +19,11 @@ class Download_YahooFinance:
             'api_key':API,
             'premium':'true'
         }
+        self.COLUMNS_MULTIPLE = [
+            'Company', 'Trailing P/E', 'Forward P/E', 'Price/Sales',
+            'Ent. Value/EBITDA', 'EBITDA', 'Beta',
+            '52 Week Change'
+        ]
 
     @property
     def PAYLOAD(self):
@@ -74,8 +79,8 @@ class Download_YahooFinance:
             'PEG Ratio 5yr Expected': peg_ratio_5yr[0] if len(peg_ratio_5yr) == 1 else None,
             'Price/Sales': price_sales[0] if len(price_sales) == 1 else None,
             'Price/Book': price_book[0] if len(price_book) == 1 else None,
-            'Enterprise Value/Revenue': enterprise_value_revenue[0] if len(enterprise_value_revenue) == 1 else None,
-            'Enterprise Value/EBITDA': enterprise_value_ebitda[0] if len(enterprise_value_ebitda) == 1 else None,
+            'Ent. Value/Revenue': enterprise_value_revenue[0] if len(enterprise_value_revenue) == 1 else None,
+            'Ent. Value/EBITDA': enterprise_value_ebitda[0] if len(enterprise_value_ebitda) == 1 else None,
             'Profit Margin': profit_margin[0] if len(profit_margin) == 1 else None,
             'Operating Margin': operating_margin[0] if len(operating_margin) == 1 else None,
             'Revenue': revenue[0] if len(revenue) == 1 else None,
@@ -91,6 +96,16 @@ class Download_YahooFinance:
         tree = self.__get_quote(ticker)
         info = self.__extract_metrics(tree)
         return info
+    
+    def get_info_multiple(self, tickers):
+        list_tickers = []
+        for t in tickers:
+            tree = self.__get_quote(t)
+            info = self.__extract_metrics(tree)
+            info['Company'] = t
+            list_tickers.append(info)
+        dataFrame = pd.DataFrame(list_tickers)
+        return dataFrame[self.COLUMNS_MULTIPLE] 
     
     def get_price(self, ticker, start_date, end_date):
         close_price = yf.download(ticker, start_date, end_date)
