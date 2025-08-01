@@ -1,12 +1,15 @@
-import requests
-from requests.exceptions import RequestException
 import os
-import pandas as pd
-import numpy as np
-import yfinance as yf
 import time
+from datetime import datetime, timedelta
+
+import requests
+import pandas as pd
+import yfinance as yf
+from requests.exceptions import RequestException
 from dotenv import load_dotenv
 from lxml import html
+
+from data_scraper.calculations.indicators import calculate_RSI
 
 load_dotenv()
 API = os.getenv('SCRAPERAPI_KEY')
@@ -46,6 +49,15 @@ class Download_YahooFinance:
                 print(f'Intento {attempt+1} fallido: {e}')
             time.sleep(1 + attempt)
         return None
+    
+    def __get_price_last_n_days(self, ticker, start_date=None, end_date=datetime.today(), n=14):
+        if start_date is None:
+            start_date = end_date - timedelta(n)
+        close_price = yf.download(ticker, start_date, end_date)
+        close_price = close_price.reset_index()
+        close_price.columns = ['Date', 'Close', 'High', 'Low', 'Open', 'Volume']
+        close_price = close_price[['Date', 'Close']]
+        return close_price
     
     def __extract_metrics(self, tree):
         # market_cap = tree.xpath('//*[@id="nimbus-app"]/section/section/section/article/section[2]/div/table/tbody/tr[1]/td[2]/text()')
@@ -95,6 +107,8 @@ class Download_YahooFinance:
     def get_info(self, ticker):
         tree = self.__get_quote(ticker)
         info = self.__extract_metrics(tree)
+        close_price = self.__get_price_last_n_days(ticker)
+        info['RSI'] = calculate_RSI(close_price)
         return info
     
     def get_info_multiple(self, tickers):

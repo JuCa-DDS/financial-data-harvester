@@ -25,6 +25,7 @@ class FinancialDashboardApp:
             try:
                 if len(ticker) == 1:
                     info = self.scraper.get_info(ticker[0])
+                    print(info)
                     return info
                 elif len(ticker) > 1:
                     info = self.scraper.get_info_multiple(ticker)
@@ -93,6 +94,8 @@ class FinancialDashboardApp:
                     st.metric(label='Trailing P/E', value=self.current_report['Trailing P/E'])
                     st.metric(label='Beta', value=self.current_report['Beta'])
                     st.metric(label='52 Week Change', value=self.current_report['52 Week Change'])
+                    if mostrar_rsi:
+                        st.metric(label='RSI (14)', value=self.current_report['RSI'])
         
         elif len(company) > 1:
             if self.current_price is not None:
