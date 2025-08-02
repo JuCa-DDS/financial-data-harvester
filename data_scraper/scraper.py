@@ -1,6 +1,7 @@
 import os
 import time
 from datetime import datetime, timedelta
+from urllib.parse import urljoin
 
 import requests
 import pandas as pd
@@ -33,8 +34,8 @@ class Download_YahooFinance:
         return self._PAYLOAD.copy()
     
     def __get_quote(self, ticker):
-        url_ticker = os.path.join(self.URL_QUOTE, f'{ticker}')
-        url_statistics = os.path.join(url_ticker, 'key-statistics')
+        url_ticker = urljoin(self.URL_QUOTE, ticker)
+        url_statistics = urljoin(url_ticker, 'key-statistics')
         payload_ = self.PAYLOAD
         payload_['url'] = url_statistics
 
@@ -49,6 +50,9 @@ class Download_YahooFinance:
                 print(f'Intento {attempt+1} fallido: {e}')
             time.sleep(1 + attempt)
         return None
+    
+    def __get_news(self, ticker):
+        pass
     
     def __get_price_last_n_days(self, ticker, start_date=None, end_date=datetime.today(), n=14):
         if start_date is None:
