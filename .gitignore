@@ -4,6 +4,8 @@
 *.pem
 *.json
 *.ipynb
+*.csv
+*.json
 
 __pycache__/
 

@@ -1,5 +1,6 @@
 import requests
 import time
+import yaml
 from requests.exceptions import RequestException
 from urllib.parse import urljoin
 from lxml import html
@@ -7,8 +8,10 @@ from lxml import html
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 
+from data_scraper.parsers.yahoo_parser import YahooFinanceParser
+
 class YahooFinanceScraper:
-    def __init__(self, api):
+    def __init__(self, api, xpath_path):
         self.base_url = 'https://finance.yahoo.com/quote/'
         self.api_url = 'https://api.scraperapi.com/'
         self.api_key = api
@@ -18,11 +21,14 @@ class YahooFinanceScraper:
             'premium':'true'
         }
 
+        with open(xpath_path, 'r') as f:
+            self.xpaths = yaml.safe_load(f)
+
     @property
     def payload(self):
         return self._payload.copy()
     
-    def get_statistics_page(self, ticker):
+    def get_statistics(self, ticker):
         url_ticker = urljoin(self.base_url, f'{ticker}/')
         url_statistics = urljoin(url_ticker, 'key-statistics')
         payload_ = self.payload
@@ -32,7 +38,9 @@ class YahooFinanceScraper:
             try:
                 response = requests.get(self.api_url, params=payload_, timeout=30)
                 if response.status_code == 200:
-                    return html.fromstring(response.content)
+                    tree = html.fromstring(response.content)
+                    parser = YahooFinanceParser(tree, self.xpaths)
+                    return parser.extract_metrics(ticker)
                 else:
                     print('Logger')
             except RequestException as e:
@@ -45,7 +53,7 @@ class YahooFinanceScraper:
         headers = {'User-Agent':'Mozilla/5.0'}
         
         try:
-            response = requests.get('GET', url_news, headers=headers, data={}).text
+            response = requests.get(url_news, headers=headers, data={})
             root = ET.fromstring(response.content)
 
             items = []
