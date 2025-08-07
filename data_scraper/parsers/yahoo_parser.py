@@ -7,21 +7,23 @@ class YahooFinanceParser():
     def __repr__(self):
         return f'<YahooFinanceParser tree={"OK" if self.tree is not None else "None"}>'
     
-    def _extract_single(self, path):
-        try:
-            value = self.tree.xpath(path)
-            return value[0] if value else None
-        except Exception as e:
-            print(f'[ERROR] Extracting path {path}: {e}')
-            return None
+    def _extract_first_match(self, paths):
+        for path in paths:
+            try:
+                result = self.tree.xpath(path)
+                if result:
+                    return result[0].strip() if isinstance(result[0], str) else result[0]
+            except Exception as e:
+                continue
+        return None
     
-    def extract_metrics(self, ticker):
+    def extract_metrics(self, source, ticker):
         extracted = {}
-        for category, fields in self.xpaths.items():
-            for name, xpath in fields.items():
-                extracted[name] = self._extract_single(xpath)
+        for category, fields in self.xpaths[source].items():
+            for metric, paths in fields.items():
+                extracted[metric] = self._extract_first_match(paths)
 
-        extracted['Ticker'] = ticker
+        # extracted['Ticker'] = ticker
 
         valid_fields = [v for k, v in extracted.items() if k != 'Ticker' and v is not None]
         if len(valid_fields) < 3:

@@ -9,24 +9,46 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 
 from data_scraper.parsers.yahoo_parser import YahooFinanceParser
+from utils.logger import LoggerService
 
 class YahooFinanceScraper:
     def __init__(self, api, xpath_path):
         self.base_url = 'https://finance.yahoo.com/quote/'
         self.api_url = 'https://api.scraperapi.com/'
         self.api_key = api
+        self.logger = LoggerService(self.__class__.__name__).get_logger()
 
         self._payload = {
             'api_key':self.api_key,
             'premium':'true'
         }
-
-        with open(xpath_path, 'r') as f:
-            self.xpaths = yaml.safe_load(f)
+        try:
+            with open(xpath_path, 'r') as f:
+                self.xpaths = yaml.safe_load(f)
+        except FileNotFoundError:
+            self.logger.error(f'[ERROR] XPath file not found at {xpath_path}')
 
     @property
     def payload(self):
         return self._payload.copy()
+    
+    def get_quote(self, ticker):
+        url_ticker = urljoin(self.base_url, f'{ticker}/')
+        payload_ = self.payload
+        payload_['url'] = url_ticker
+        
+        for attempt in range(3): 
+            try:
+                response = requests.get(self.api_url, params=payload_, timeout=30)
+                if response.status_code == 200:
+                    tree = html.fromstring(response.content)
+                    parser = YahooFinanceParser(tree, self.xpaths)
+                    return parser.extract_metrics('statistics', ticker)
+                else:
+                    self.logger.error(f'[ERROR] Status != 200 for {ticker}')
+            except RequestException as e:
+                self.logger.error(f'[ERROR] Attempt {attempt+1} failed:{e} for {ticker}')
+            time.sleep(1 + attempt) 
     
     def get_statistics(self, ticker):
         url_ticker = urljoin(self.base_url, f'{ticker}/')
@@ -40,11 +62,11 @@ class YahooFinanceScraper:
                 if response.status_code == 200:
                     tree = html.fromstring(response.content)
                     parser = YahooFinanceParser(tree, self.xpaths)
-                    return parser.extract_metrics(ticker)
+                    return parser.extract_metrics('statistics', ticker)
                 else:
-                    print('Logger')
+                    self.logger.error(f'[ERROR] Status != 200')
             except RequestException as e:
-                print(f'Intento {attempt+1} fallido: {e}')
+                self.logger.error(f'[ERROR] Attempt {attempt+1} failed:{e}')
             time.sleep(1 + attempt)
         return None
     

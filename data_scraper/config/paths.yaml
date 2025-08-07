@@ -1,25 +1,55 @@
-valuation:
-    Market_Cap: '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[1]/td[2]/text()'
-    Enterprise_Value: '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[2]/td[2]/text()'
-    Trailing_PE: '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[3]/td[2]/text()'
-    Forward_PE: '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[4]/td[2]/text()'
-    PEG_Ratio_5yr: '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[5]/td[2]/text()'
-    Price_Sales: '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[6]/td[2]/text()'
-    Price_Book: '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[7]/td[2]/text()'
-    Enterprise_Value_Revenue: '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[8]/td[2]/text()'
-    Enterprise_Value_EBITDA: '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[9]/td[2]/text()'
+statistics:
+    valuation:
+        Market_Cap: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[1]/td[2]/text()'
+        Enterprise_Value: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[2]/td[2]/text()'
+        Trailing_PE: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[3]/td[2]/text()'
+        Forward_PE: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[4]/td[2]/text()'
+        PEG_Ratio_5yr: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[5]/td[2]/text()'
+        Price_Sales: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[6]/td[2]/text()'
+        Price_Book: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[7]/td[2]/text()'
+        Enterprise_Value_Revenue: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[8]/td[2]/text()'
+        Enterprise_Value_EBITDA: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/section[2]/div/table/tbody/tr[9]/td[2]/text()'
 
-profitability:
-    Profit_Margin: '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[2]/table/tbody/tr[1]/td[2]/text()'
-    Operating_Margin: '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[2]/table/tbody/tr[2]/td[2]/text()'
+    profitability:
+        Profit_Margin: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[2]/table/tbody/tr[1]/td[2]/text()'
+        Operating_Margin: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[2]/table/tbody/tr[2]/td[2]/text()'
 
-income_statement:
-    Revenue: '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[4]/table/tbody/tr[1]/td[2]/text()'
-    Revenue_Per_Share: '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[4]/table/tbody/tr[2]/td[2]/text()'
-    Quarterly_Revenue_Growth: '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[4]/table/tbody/tr[3]/td[2]/text()'
-    Gross_Profit: '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[4]/table/tbody/tr[4]/td[2]/text()'
-    EBITDA: '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[4]/table/tbody/tr[5]/td[2]/text()'
+    income_statement:
+        Revenue: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[4]/table/tbody/tr[1]/td[2]/text()'
+        Revenue_Per_Share: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[4]/table/tbody/tr[2]/td[2]/text()'
+        Quarterly_Revenue_Growth: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[4]/table/tbody/tr[3]/td[2]/text()'
+        Gross_Profit: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[4]/table/tbody/tr[4]/td[2]/text()'
+        EBITDA: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[1]/div/section[4]/table/tbody/tr[5]/td[2]/text()'
 
-stock_price_history:
-    Beta: '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[2]/div/section[1]/table/tbody/tr[1]/td[2]/text()'
-    52_Week_Change: '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[2]/div/section[1]/table/tbody/tr[2]/td[2]/text()'
+    stock_price_history:
+        Beta: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[2]/div/section[1]/table/tbody/tr[1]/td[2]/text()'
+        52_Week_Change: 
+            - '//*[@id="nimbus-app"]/section/section/section/section/article/div/section[2]/div/section[1]/table/tbody/tr[2]/td[2]/text()'
+
+quote:
+    valuation:
+        PE_Ratio:
+            - '//*[@id="main-content-wrapper"]/section[2]/div[1]/ul/li[11]/span[2]/text()'
+            - '//*[@id="main-content-wrapper"]/section[2]/div[1]/ul/li[11]/span[2]/fin-streamer/text()'
+    
+    stock_price_history:
+        Beta:
+            - '//*[@id="main-content-wrapper"]/section[2]/div[1]/ul/li[14]/span[2]/text()'
+            - '//*[@id="main-content-wrapper"]/section[2]/div[1]/ul/li[10]/span[2]/text()'
