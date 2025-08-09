@@ -3,7 +3,7 @@ from data_scraper.scrapers.yahoo_scraper import YahooFinanceScraper
 from tqdm import tqdm
 
 class YahooFinanceBatchScraper:
-    def __init__(self, scraper:YahooFinanceScraper, max_workers=10):
+    def __init__(self, scraper:YahooFinanceScraper, max_workers=15):
         self.scraper = scraper
         self.max_workers = max_workers
 
@@ -14,7 +14,7 @@ class YahooFinanceBatchScraper:
         except Exception as e:
             return {'ticker':ticker, 'error':str(e), 'status':'fail'}
     
-    def scrape_multiple(self, tickers):
+    def scrape_multiple(self, tickers, show_progress=True):
         successful = []
         failed = []
 
@@ -23,17 +23,18 @@ class YahooFinanceBatchScraper:
                 executor.submit(self._safe_scrape, ticker): ticker for ticker in tickers
             }
 
-            with tqdm(total=len(tickers), desc='Downloading') as pbar:
-                for future in as_completed(futures):
-                    ticker = futures[future]
-                    result = future.result()
-                    
-                    if result['status'] == 'ok':
-                        successful.append(result)
-                    else:
-                        failed.append(result)
-                        # print(f'[ERROR] {ticker} generated an exception: {result['error']}')
-                    
-                    pbar.set_postfix({'Ticker':ticker})
-                    pbar.update(1)
+            iterator = as_completed(futures)
+
+            if show_progress:
+                iterator = tqdm(iterator, total=len(tickers), desc='Downloading')
+            
+            for future in iterator:
+                ticker = futures[future]
+                result = future.result()
+                
+                if result['status'] == 'ok':
+                    successful.append(result)
+                else:
+                    failed.append(result)
+                
         return {'ok':successful, 'failed':failed}
