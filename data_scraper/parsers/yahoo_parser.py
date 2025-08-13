@@ -1,3 +1,4 @@
+from data_scraper.parsers.normalizer import clean_numeric_with_suffix
 
 class YahooFinanceParser():
     def __init__(self, tree, xpath_dict):
@@ -17,11 +18,14 @@ class YahooFinanceParser():
                 continue
         return None
     
-    def extract_metrics(self, source, ticker):
+    def extract_metrics(self, source, ticker, normalize=True):
         extracted = {}
         for category, fields in self.xpaths[source].items():
             for metric, paths in fields.items():
-                extracted[metric] = self._extract_first_match(paths)
+                raw_value = self._extract_first_match(paths)
+                if normalize:
+                    raw_value = clean_numeric_with_suffix(raw_value) 
+                extracted[metric] = raw_value 
 
         # extracted['Ticker'] = ticker
 
