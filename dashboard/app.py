@@ -1,18 +1,27 @@
-import streamlit as st
-import datetime
-import pandas as pd
-import numpy as np 
 import sys
 import os
+import datetime
+
+import streamlit as st
+import pandas as pd
+import numpy as np 
+from dotenv import load_dotenv
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from data_scraper.scraper import Download_YahooFinance
+from data_scraper.scrapers.yahoo_scraper import YahooFinanceScraper
+from data_scraper.fetchers.price_fetcher import YahooFinanceFetcher
+
+load_dotenv()
+API_KEY = os.getenv('SCRAPERAPI_KEY')
+YAML_PATH = 'data_scraper/config/paths.yaml'
 
 class FinancialDashboardApp:
-    def __init__(self):
+    def __init__(self, api_key=API_KEY, xpath_path=YAML_PATH):
         self.df = pd.DataFrame({'Col1':[1, 2, 3], 'Col2':[4, 5, 6]})
         self.csv = self.convert_df(self.df)
-        self.scraper = Download_YahooFinance()
+        self.scraper = YahooFinanceScraper(api_key, xpath_path)
+        self.fetcher = YahooFinanceFetcher()
         self.current_report = None
         self.current_price = None
 
@@ -24,7 +33,7 @@ class FinancialDashboardApp:
         with st.spinner('Downloading info, please wait...'):
             try:
                 if len(ticker) == 1:
-                    info = self.scraper.get_info(ticker[0])
+                    info = self.scraper.get_statistics(ticker[0])
                     print(info)
                     return info
                 elif len(ticker) > 1:
@@ -34,7 +43,7 @@ class FinancialDashboardApp:
                 st.error(f'Error con {ticker}: {str(e)}')
     
     def __generate_price(self, ticker, start_date, end_date):
-        price = self.scraper.get_price(ticker, start_date, end_date)
+        price = self.fetcher.get_price(ticker, start_date, end_date)
         return price
     
     def render(self):
@@ -91,9 +100,9 @@ class FinancialDashboardApp:
             
             with col6:
                 if self.current_price is not None:
-                    st.metric(label='Trailing P/E', value=self.current_report['Trailing P/E'])
+                    st.metric(label='Trailing P/E', value=self.current_report['Trailing_PE'])
                     st.metric(label='Beta', value=self.current_report['Beta'])
-                    st.metric(label='52 Week Change', value=self.current_report['52 Week Change'])
+                    st.metric(label='52 Week Change', value=self.current_report['52_Week_Change'])
                     if mostrar_rsi:
                         st.metric(label='RSI (14)', value=self.current_report['RSI'])
         

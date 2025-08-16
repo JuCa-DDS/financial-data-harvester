@@ -11,10 +11,11 @@ from bs4 import BeautifulSoup
 from data_scraper.parsers.yahoo_parser import YahooFinanceParser
 from utils.logger import LoggerService
 
+BASE_URL = 'https://finance.yahoo.com/quote/' 
+API_URL = 'https://api.scraperapi.com/'
+
 class YahooFinanceScraper:
     def __init__(self, api, xpath_path):
-        self.base_url = 'https://finance.yahoo.com/quote/'
-        self.api_url = 'https://api.scraperapi.com/'
         self.api_key = api
         self.logger = LoggerService(self.__class__.__name__).get_logger()
 
@@ -33,7 +34,7 @@ class YahooFinanceScraper:
         return self._payload.copy()
     
     def get_quote(self, ticker):
-        url_ticker = urljoin(self.base_url, f'{ticker}/')
+        url_ticker = urljoin(BASE_URL, f'{ticker}/')
         payload_ = self.payload
         payload_['url'] = url_ticker
         
@@ -50,19 +51,19 @@ class YahooFinanceScraper:
                 self.logger.error(f'[ERROR] Attempt {attempt+1} failed:{e} for {ticker}')
             time.sleep(1 + attempt) 
     
-    def get_statistics(self, ticker):
-        url_ticker = urljoin(self.base_url, f'{ticker}/')
+    def get_statistics(self, ticker, normalize=False):
+        url_ticker = urljoin(BASE_URL, f'{ticker}/')
         url_statistics = urljoin(url_ticker, 'key-statistics')
         payload_ = self.payload
         payload_['url'] = url_statistics
 
         for attempt in range(3):
             try:
-                response = requests.get(self.api_url, params=payload_, timeout=30)
+                response = requests.get(API_URL, params=payload_, timeout=30)
                 if response.status_code == 200:
                     tree = html.fromstring(response.content)
                     parser = YahooFinanceParser(tree, self.xpaths)
-                    return parser.extract_metrics('statistics', ticker)
+                    return parser.extract_metrics('statistics', ticker, normalize=normalize)
                 else:
                     self.logger.error(f'[ERROR] Status != 200')
             except RequestException as e:
