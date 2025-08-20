@@ -46,10 +46,22 @@ statistics:
 quote:
     valuation:
         PE_Ratio:
-            - '//*[@id="main-content-wrapper"]/section[2]/div[1]/ul/li[11]/span[2]/text()'
-            - '//*[@id="main-content-wrapper"]/section[2]/div[1]/ul/li[11]/span[2]/fin-streamer/text()'
+            - '//*[@id="main-content-wrapper"]/section[2]/div/ul/li[11]/span[2]/fin-streamer/text()'
+            - '//*[@id="main-content-wrapper"]/section[2]/div/ul/li[11]/span[2]/text()'
+        EPS:
+            - '//*[@id="main-content-wrapper"]/section[2]/div/ul/li[12]/span[2]/fin-streamer/text()'
     
     stock_price_history:
         Beta:
-            - '//*[@id="main-content-wrapper"]/section[2]/div[1]/ul/li[14]/span[2]/text()'
-            - '//*[@id="main-content-wrapper"]/section[2]/div[1]/ul/li[10]/span[2]/text()'
+            - '//*[@id="main-content-wrapper"]/section[2]/div/ul/li[10]/span[2]/text()'
+
+    company-profile:
+        Sector:
+            - '/html/body/div[2]/main/section/section/section/section/section[3]/div/div/div[2]/div/div[1]/div[2]/div[3]/p/a/text()'
+        Industry:
+            - '/html/body/div[2]/main/section/section/section/section/section[3]/div/div/div[2]/div/div[1]/div[2]/div[4]/p/a/text()'
+        Fund_Family:
+            - '/html/body/div[2]/main/section/section/section/section/section[3]/div/div/div[2]/div/div[1]/div[2]/div[1]/p/text()'
+        Fund_Category:
+            - '/html/body/div[2]/main/section/section/section/section/section[3]/div/div/div[2]/div/div[1]/div[2]/div[2]/p/text()'
+    

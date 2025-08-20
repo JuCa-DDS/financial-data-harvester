@@ -2,7 +2,7 @@ import re
 
 _NUMBER_RE = re.compile(r'([-+]?\d+(?:\.\d+)?)')
 
-def clean_numeric_with_suffix(value, percent_as='fraction'):
+def clean_numeric_with_suffix(value, percent_as='fraction', fallback_to_original=True):
     if value is None:
         return None
     
@@ -22,13 +22,12 @@ def clean_numeric_with_suffix(value, percent_as='fraction'):
 
     m = _NUMBER_RE.search(s)
     if not m:
-        return None
+        return value if fallback_to_original else None
+        
     number = float(m.group(1))
-
     suffix = s[-1].upper() if s and s[-1].isalpha() else ''
     suffix_map = {'K': 1e3, 'M': 1e6, 'B': 1e9, 'T': 1e12}
     multiplier = suffix_map.get(suffix, 1)
-
     out = number * multiplier
 
     if has_percent:

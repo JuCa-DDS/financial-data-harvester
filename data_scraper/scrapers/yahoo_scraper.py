@@ -33,18 +33,18 @@ class YahooFinanceScraper:
     def payload(self):
         return self._payload.copy()
     
-    def get_quote(self, ticker):
+    def get_quote(self, ticker, normalize=False):
         url_ticker = urljoin(BASE_URL, f'{ticker}/')
         payload_ = self.payload
         payload_['url'] = url_ticker
         
         for attempt in range(3): 
             try:
-                response = requests.get(self.api_url, params=payload_, timeout=30)
+                response = requests.get(API_URL, params=payload_, timeout=30)
                 if response.status_code == 200:
                     tree = html.fromstring(response.content)
                     parser = YahooFinanceParser(tree, self.xpaths)
-                    return parser.extract_metrics('statistics', ticker)
+                    return parser.extract_metrics('quote', ticker, normalize=normalize)
                 else:
                     self.logger.error(f'[ERROR] Status != 200 for {ticker}')
             except RequestException as e:

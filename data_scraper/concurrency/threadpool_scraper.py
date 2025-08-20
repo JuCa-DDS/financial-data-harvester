@@ -7,20 +7,36 @@ class YahooFinanceBatchScraper:
         self.scraper = scraper
         self.max_workers = max_workers
 
-    def _safe_scrape(self, ticker):
+    def _resolve_fetcher(self, fetch, normalize=True, fetch_kwargs=None):
+        fetch_kwargs = fetch_kwargs or {}
+
+        if callable(fetch):
+            return fetch
+        
+        if isinstance(fetch, str):
+            f = fetch.lower()
+            if f == 'statistics':
+                return lambda t: self.scraper.get_statistics(t, normalize=normalize, **fetch_kwargs)
+            if f == 'quote':
+                return lambda t: self.scraper.get_quote(t, normalize=normalize, **fetch_kwargs)
+        
+        raise ValueError(f"Fetcher no valido: {fetch}")
+
+    def _safe_scrape(self, ticker, fetcher):
         try:
-            data = self.scraper.get_statistics(ticker)
-            return {'ticker':ticker, 'data':data, 'status':'ok'}
+            data = fetcher(ticker) 
+            status = 'ok' if data else 'fail'
+            return {'ticker':ticker, 'data':data, 'status':status}
         except Exception as e:
             return {'ticker':ticker, 'error':str(e), 'status':'fail'}
     
-    def scrape_multiple(self, tickers, show_progress=True):
-        successful = []
-        failed = []
+    def scrape_multiple(self, tickers, fetch='statistics', normalize=False, show_progress=True, tqdm_kwargs=None, fetch_kwargs=None):
+        fetcher = self._resolve_fetcher(fetch, normalize=normalize, fetch_kwargs=fetch_kwargs)
+        successful, failed = [], []
 
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             futures = {
-                executor.submit(self._safe_scrape, ticker): ticker for ticker in tickers
+                executor.submit(self._safe_scrape, ticker, fetcher): ticker for ticker in tickers
             }
 
             iterator = as_completed(futures)

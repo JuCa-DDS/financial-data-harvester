@@ -12,7 +12,7 @@ class YahooFinanceParser():
         for path in paths:
             try:
                 result = self.tree.xpath(path)
-                if result:
+                if result or result is not None:
                     return result[0].strip() if isinstance(result[0], str) else result[0]
             except Exception as e:
                 continue
@@ -28,8 +28,8 @@ class YahooFinanceParser():
                 extracted[metric] = raw_value 
 
         # extracted['Ticker'] = ticker
-
         valid_fields = [v for k, v in extracted.items() if k != 'Ticker' and v is not None]
-        if len(valid_fields) < 3:
+        # print(f'[DEBUG] Extracted {ticker} {extracted}')
+        if len(valid_fields) < 1:
             raise ValueError(f"No se extrajeron suficientes datos para {ticker}")
         return extracted
